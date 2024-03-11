@@ -35,6 +35,10 @@ func main() {
 	commentUsecase := usecase.NewCommentUsecase(commentRepository, commentValidator, reviewPostRepository)
 	commentController := controller.NewCommentController(commentUsecase)
 
-	e := router.NewRouter(userController, productController, reviewPostController, likeController, commentController)
+	moneyManagementRepository := repository.NewMoneyManagementRepository(db)
+	moneyManagementUsecase := usecase.NewMoneyManagementUsecase(moneyManagementRepository)
+	moneyManagementController := controller.NewMoneyManagementController(moneyManagementUsecase)
+
+	e := router.NewRouter(userController, productController, reviewPostController, likeController, commentController, moneyManagementController)
 	e.Logger.Fatal(e.Start(":8080"))
 }

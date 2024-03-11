@@ -17,6 +17,7 @@ func NewRouter(
 	rc controller.IReviewPostController,
 	lc controller.ILikeController,
 	cc controller.ICommentController,
+	mc controller.IMoneyManagementController,
 ) *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -101,6 +102,14 @@ func NewRouter(
 
 	// JWTが必須でないエンドポイント
 	e.GET("/comment", cc.GetCommentsByPostId)
+
+	m := e.Group("/moneyManagement")
+	// JWTが必須なエンドポイント
+	m.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	m.POST("", mc.CreateMoneyManagement)
 
 	return e
 }
