@@ -18,6 +18,7 @@ func NewRouter(
 	lc controller.ILikeController,
 	cc controller.ICommentController,
 	mc controller.IMoneyManagementController,
+	bc controller.IBudgetController,
 ) *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -113,6 +114,14 @@ func NewRouter(
 	m.GET("", mc.GetMyMoneyManagements)
 	m.PUT("/:id", mc.UpdateMoneyManagement)
 	m.DELETE("/:id", mc.DeleteMoneyManagement)
+
+	b := e.Group("/budget")
+	b.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	// JWTが必須なエンドポイント
+	b.POST("", bc.CreateBudget)
 
 	return e
 }
